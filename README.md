@@ -14,7 +14,7 @@ found: orbital
 ### pattern syntax
 You can use '?' and '[abc]' and '{abc,def,hij}' as shell expansions.
 
-Some character sets is defined. '{%lower}' means lowercase alphabets.
+Some character sets are defined. '{%lower}' means lowercase alphabets.
 
 '?' is replaced to '{%lower}' by default.
 You can specify default charsets by '-s' option.
