@@ -158,13 +158,17 @@ def parse_pattern(pat, default_charset=charsets['alpha']):
 
 
 class Wrapper:
-    def __init__(self, msg):
+    def __init__(self, msg, expected):
         self.msg = msg
+        self.expected = expected
     
-    def hash(self, passphrase):
+    def check(self, passphrase):
         key = hashlib.sha256(passphrase.encode()).hexdigest().encode()
         computed = hmac.new(key, self.msg, hashlib.sha256).hexdigest()
-        return (passphrase, computed)
+        if computed == self.expected:
+            return passphrase
+        else:
+            return None
 
 
 def main(problem_id, pattern, n_rescan=0, charset='%lower', flag_list=False, flag_count=False, parallel=1):
@@ -211,16 +215,14 @@ def main(problem_id, pattern, n_rescan=0, charset='%lower', flag_list=False, fla
             if i != 0 and i % 1000000 == 0:
                 print(f'...{i}')
     else:
-        i = 0
-        wrapper = Wrapper(msg)
+        wrapper = Wrapper(msg, expected)
         with ProcessPoolExecutor(max_workers=parallel) as executor:
-            for candidate, computed in executor.map(
-                wrapper.hash,
-                candidates, chunksize=10000):
-                if computed == expected:
+            for i, candidate in enumerate(executor.map(
+                wrapper.check,
+                candidates, chunksize=10000)):
+                if candidate is not None:
                     print(f'found: {candidate}')
                     break
-                i += 1
                 if i != 0 and i % 1000000 == 0:
                     print(f'...{i}')
 
