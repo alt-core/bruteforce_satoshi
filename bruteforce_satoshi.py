@@ -222,7 +222,7 @@ if __name__ == "__main__":
     parser.add_argument('pattern', help='ex: a?c[de]{fg,hi}{%%alpha,%%number}')
     parser.add_argument('-c', '--count', dest='count', action='store_true', default=False, help='count candidates then exit')
     parser.add_argument('-l', '--list', dest='list', action='store_true', default=False, help='show candidates then exit')
-    parser.add_argument('-r', '--rescan', dest='rescan', default=0, help='replace N single chars to ? by rotation. default: 0')
+    parser.add_argument('-r', '--rescan', dest='rescan', type=int, default=0, help='replace N single chars to ? by rotation. default: 0')
     parser.add_argument('-d', '--dic', '--dictionary', dest='dictionary', default=None, help='you can refer the dictionary as %%dic')
     parser.add_argument('-s', '--charset', dest='charset', default='%lower', help='default: %%lower')
     parser.add_argument('-p', '--parallel', dest='parallel', type=int, default=1, help='number of CPUs to use')
