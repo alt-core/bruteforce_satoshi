@@ -5,6 +5,7 @@ import itertools
 import urllib.request
 import ssl
 import re
+from concurrent.futures import ProcessPoolExecutor
 
 FILE_NAME = 'encrypted_msgs.txt'
 
@@ -156,6 +157,16 @@ def parse_pattern(pat, default_charset=charsets['alpha']):
     return parsed
 
 
+class Wrapper:
+    def __init__(self, msg):
+        self.msg = msg
+    
+    def hash(self, passphrase):
+        key = hashlib.sha256(passphrase.encode()).hexdigest().encode()
+        computed = hmac.new(key, self.msg, hashlib.sha256).hexdigest()
+        return (passphrase, computed)
+
+
 def main(problem_id, pattern, n_rescan=0, charset='%lower', flag_list=False, flag_count=False, parallel=1):
     default_charset = eval_word_list(find_unescaped_char_and_split(charset, None)[1])
 
@@ -200,12 +211,12 @@ def main(problem_id, pattern, n_rescan=0, charset='%lower', flag_list=False, fla
             if i != 0 and i % 1000000 == 0:
                 print(f'...{i}')
     else:
-        from concurrent.futures import ProcessPoolExecutor
         i = 0
+        wrapper = Wrapper(msg)
         with ProcessPoolExecutor(max_workers=parallel) as executor:
             for candidate, computed in executor.map(
-                lambda passphrase: (passphrase, hmac.new(hashlib.sha256(passphrase.encode()).hexdigest().encode(), msg, hashlib.sha256).hexdigest()),
-                candidates, chunksize=1000):
+                wrapper.hash,
+                candidates, chunksize=10000):
                 if computed == expected:
                     print(f'found: {candidate}')
                     break

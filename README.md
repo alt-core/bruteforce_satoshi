@@ -49,3 +49,19 @@ write cache data to encrypted_msgs.txt...
 start...
 found: blackhole
 ```
+
+### parallel execution
+```
+> time python3 bruteforce_satoshi.py k1 'or?????'
+start...
+found: orbital
+python3 bruteforce_satoshi.py k1 'or?????'  19.26s user 0.03s system 99% cpu 19.297 total
+> time python3 bruteforce_satoshi.py k1 'or?????' -p 2
+start...
+found: orbital
+python3 bruteforce_satoshi.py k1 'or?????' -p 2  27.63s user 0.70s system 178% cpu 15.886 total
+> time python3 bruteforce_satoshi.py k1 'or?????' -p 4
+start...
+found: orbital
+python3 bruteforce_satoshi.py k1 'or?????' -p 4  30.11s user 0.86s system 276% cpu 11.197 total
+```
