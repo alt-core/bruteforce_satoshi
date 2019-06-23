@@ -24,7 +24,7 @@ charsets = {
 
 
 def fetch_encryptedMsg(problem_id):
-    url = f'https://satoshistreasure.xyz/{problem_id}'
+    url = 'https://satoshistreasure.xyz/' + problem_id
     matcher = re.compile(r"^\s*encryptedMsg\s*=\s*'([^']*)'")
 
     try:
@@ -32,7 +32,7 @@ def fetch_encryptedMsg(problem_id):
             for line in response:
                 ma = matcher.match(line.decode('utf-8'))
                 if ma:
-                    return ma[1]
+                    return ma.group(1)
     except:
         pass
     return None
@@ -53,14 +53,14 @@ def get_encryptedMsg(problem_id):
     
     msg = fetch_encryptedMsg(problem_id)
     if msg is None:
-        raise RuntimeError(f'cannot fetch {problem_id}')
+        raise RuntimeError('cannot fetch ' + problem_id)
     
     cache[problem_id] = msg
     try:
         with open(FILE_NAME, 'w') as fp:
-            print(f'write cache data to {FILE_NAME}...')
+            print('write cache data to ' + FILE_NAME + '...')
             for id in cache:
-                fp.write(f'{id},{cache[id]}\n')
+                fp.write(id + ',' + cache[id] + '\n')
     except:
         pass
     
@@ -197,10 +197,10 @@ def main(problem_id, pattern, n_rescan=0, charset='%lower', flag_list=False, fla
             if flag_list:
                 print(candidate)
             count += 1
-        print(f'total: {count} candidates')
+        print('total: %d candidates' % count)
         exit(0)
     else:
-        print(f'start...')
+        print('start...')
 
     expected = encryptedMsg[0:64]
     msg = encryptedMsg[64:].encode()
@@ -210,10 +210,10 @@ def main(problem_id, pattern, n_rescan=0, charset='%lower', flag_list=False, fla
             key = hashlib.sha256(candidate.encode()).hexdigest().encode()
             computed = hmac.new(key, msg, hashlib.sha256).hexdigest()
             if computed == expected:
-                print(f'found: {candidate}')
+                print('found: ' + candidate)
                 break
             if i != 0 and i % 1000000 == 0:
-                print(f'...{i}')
+                print('...%d' % i)
     else:
         wrapper = Wrapper(msg, expected)
         with ProcessPoolExecutor(max_workers=parallel) as executor:
@@ -221,10 +221,10 @@ def main(problem_id, pattern, n_rescan=0, charset='%lower', flag_list=False, fla
                 wrapper.check,
                 candidates, chunksize=10000)):
                 if candidate is not None:
-                    print(f'found: {candidate}')
+                    print('found: ' + candidate)
                     break
                 if i != 0 and i % 1000000 == 0:
-                    print(f'...{i}')
+                    print('...%d' % i)
 
 
 
