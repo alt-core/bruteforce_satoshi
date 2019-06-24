@@ -211,7 +211,7 @@ def main(problem_id, pattern, n_rescan=0, charset='%lower', flag_list=False, fla
             computed = hmac.new(key, msg, hashlib.sha256).hexdigest()
             if computed == expected:
                 print('found: ' + candidate)
-                break
+                return
             if i != 0 and i % 1000000 == 0:
                 print('...%d' % i)
     else:
@@ -222,10 +222,10 @@ def main(problem_id, pattern, n_rescan=0, charset='%lower', flag_list=False, fla
                 candidates, chunksize=10000)):
                 if candidate is not None:
                     print('found: ' + candidate)
-                    break
+                    return
                 if i != 0 and i % 1000000 == 0:
                     print('...%d' % i)
-
+    print('not found')
 
 
 if __name__ == "__main__":
